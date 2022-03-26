@@ -320,33 +320,36 @@ const char* makeJsonLf(int indent)
 
 
 template< typename StreamType > inline
+void printScalar( StreamType &s, int indent, const YAML::Node &n, bool isFirst, bool isLast, std::string name = "" )
+{
+    std::string value = "null";
+    if (n.Type()==YAML::NodeType::value::Scalar)
+    {
+        std::string scalarValue = n.as<std::string>();
+        value = makeQuoted(scalarValue);
+    }
+
+    s << makeIndentStr(indent);
+
+    if (!name.empty())
+    {
+        s << makeQuoted(name,true) << ": ";
+    }
+
+    s << value;
+
+    if (!isLast)
+        s << ",";
+    s << makeJsonLf(indent);
+
+}
+
+
+template< typename StreamType > inline
 void writeJsonImpl( StreamType &s, const YAML::Node &node, int indentIncrement, int indent = 0 )
 {
     auto nodeType = node.Type();
 
-    auto printScalar = [&](const YAML::Node &n, bool isFirst, bool isLast, std::string name = "" )
-    {
-        std::string value = "null";
-        if (n.Type()==YAML::NodeType::value::Scalar)
-        {
-            std::string scalarValue = n.as<std::string>();
-            value = makeQuoted(scalarValue);
-        }
-
-        s << makeIndentStr(indent);
-
-        if (!name.empty())
-        {
-            s << makeQuoted(name,true) << ": ";
-        }
-
-        s << value;
-
-        if (!isLast)
-            s << ",";
-        s << makeJsonLf(indent);
-    
-    };
 
 
     switch( nodeType )
@@ -380,7 +383,7 @@ void writeJsonImpl( StreamType &s, const YAML::Node &node, int indentIncrement, 
                          case YAML::NodeType::value::Undefined:
                          case YAML::NodeType::value::Null     :
                          case YAML::NodeType::value::Scalar   :
-                              printScalar(*it, isFirst, isLast);
+                              printScalar( s, indent, *it, isFirst, isLast);
                               break;
 
                          case YAML::NodeType::value::Sequence :
@@ -433,7 +436,7 @@ void writeJsonImpl( StreamType &s, const YAML::Node &node, int indentIncrement, 
                          case YAML::NodeType::value::Undefined:
                          case YAML::NodeType::value::Null     :
                          case YAML::NodeType::value::Scalar   :
-                              printScalar(it->second, isFirst, isLast, name);
+                              printScalar( s, indent, it->second, isFirst, isLast, name);
                               break;
 
                          case YAML::NodeType::value::Sequence :
@@ -489,6 +492,12 @@ void writeJson( StreamType &s, const YAML::Node &node, int indentIncrement, int 
     //int calcJsonIndent( int prevIndent, int indentIncrement )
     switch( nodeType )
     {
+        case YAML::NodeType::value::Undefined:
+        case YAML::NodeType::value::Null     :
+        case YAML::NodeType::value::Scalar   :
+             printScalar( s, indent, node, true, true );
+             break;
+
         case YAML::NodeType::value::Sequence :
              {
                  s << makeIndentStr(indent) << "[" << makeJsonLf(indent);
