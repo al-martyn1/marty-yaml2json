@@ -481,6 +481,9 @@ void writeJsonImpl( StreamType &s, const YAML::Node &node, int indentIncrement, 
 template< typename StreamType > inline
 void writeJson( StreamType &s, const YAML::Node &node, int indentIncrement, int indent = 0 )
 {
+    if (indentIncrement<0)
+        indent = -1;
+
     auto nodeType = node.Type();
 
     //int calcJsonIndent( int prevIndent, int indentIncrement )

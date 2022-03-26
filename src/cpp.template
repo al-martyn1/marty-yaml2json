@@ -17,6 +17,8 @@
 #include <iterator>
 #include <random>
 #include <cstdlib>
+#include <exception>
+#include <stdexcept>
 
 
 #include "tests.h"

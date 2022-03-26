@@ -37,17 +37,29 @@ using namespace std;
 
 int main( int argc, char* argv[] )
 {
+    if (argc<2)
+    {
+        std::cerr << "No input file taken" << endl;
+        std::cerr << "Usage: marty-yaml2json file [indent]" << endl;
+        std::cerr << "  Optional indent can be <0 to generate resulting JSON into single line." << endl;
+        return 1;
+    }
+
+
     try
     {
-        #ifdef USE_EXACT_TEST
-       
-            INIT_TEST_INPUT_FILE_EX("002");
-       
-        #else
-       
-            INIT_TEST_INPUT_FILE_ARG();
-       
-        #endif
+        int indent = 2;
+
+        if (argc>1)
+            indent = std::stoi(argv[2]);
+
+        std::ifstream in;
+        in.open(argv[1], std::ios_base::in);
+        if (!in)
+        {
+            std::cerr << "Failed to open input file: " << argv[1] << std::endl;
+            return 1;
+        }
        
        
         YAML::Node rootNode = YAML::Load(in);
@@ -56,11 +68,11 @@ int main( int argc, char* argv[] )
        
         #ifndef USE_FAST_STREAM
         
-            marty::yaml2json::writeJson(std::cout, rootNode, 2);
+            marty::yaml2json::writeJson(std::cout, rootNode, indent);
        
         #else
        
-            marty::yaml2json::writeJson(fssm, rootNode, 2);
+            marty::yaml2json::writeJson(fssm, rootNode, indent);
             std::cout << fssm.str();
        
         #endif
