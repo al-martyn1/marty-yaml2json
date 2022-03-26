@@ -1,0 +1,7 @@
+Brief Description for Project Sources
+-------------------------------------
+
+test001.cpp      - Тестировал/разбирался, как работает либа yaml-cpp.
+test002.cpp      - Тест конвертера YAML->JSON.
+test003.cpp      - [ ].
+test004.cpp      - [ ].

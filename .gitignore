@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+/.vs
+/.out
+/_prj_msvc2019/*.user
+/tests/*.log
