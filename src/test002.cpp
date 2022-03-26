@@ -68,17 +68,17 @@ int main( int argc, char* argv[] )
     catch (const YAML::Exception& e)
     {
         std::cerr << "Processing YAML failed: " << e.what() << endl;
-        return -1;
+        return 2;
     }
     catch (const std::exception& e)
     {
         std::cerr << "Processing YAML failed: " << e.what() << endl;
-        return -1;
+        return 2;
     }
     catch (...)
     {
         std::cerr << "Processing YAML failed: " << "unknown error" << endl;
-        return -1;
+        return 2;
     }
 
 
