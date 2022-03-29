@@ -80,7 +80,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>USE_LOUT;UNICODE;_UNICODE;WIN32;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_UMBA_LOUT_COUT;UNICODE;_UNICODE;WIN32;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -97,14 +97,14 @@
       <GenerateMapFile>true</GenerateMapFile>
     </Link>
     <QtMoc>
-      <Define>USE_LOUT;UNICODE;_UNICODE;WIN32;WIN64;%(PreprocessorDefinitions)</Define>
+      <Define>USE_UMBA_LOUT_COUT;UNICODE;_UNICODE;WIN32;WIN64;%(PreprocessorDefinitions)</Define>
       <IncludePath>$(UMBA_INC_DIRS);.;$(QTDIR)\include;$(LLVM_CLANG_INC);.\GeneratedFiles\$(ConfigurationName);%(AdditionalIncludeDirectories);$(ProjectDir)\..\..</IncludePath>
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>USE_LOUT;UNICODE;_UNICODE;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_UMBA_LOUT_COUT;UNICODE;_UNICODE;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -121,14 +121,14 @@
       <GenerateMapFile>true</GenerateMapFile>
     </Link>
     <QtMoc>
-      <Define>USE_LOUT;UNICODE;_UNICODE;WIN32;%(PreprocessorDefinitions)</Define>
+      <Define>USE_UMBA_LOUT_COUT;UNICODE;_UNICODE;WIN32;%(PreprocessorDefinitions)</Define>
       <IncludePath>$(UMBA_INC_DIRS);.;$(QTDIR)\include;$(LLVM_CLANG_INC);.\GeneratedFiles\$(ConfigurationName);%(AdditionalIncludeDirectories)</IncludePath>
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>USE_LOUT;UNICODE;_UNICODE;WIN32;WIN64;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_UMBA_LOUT_COUT;UNICODE;_UNICODE;WIN32;WIN64;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat />
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(UMBA_INC_DIRS);.;$(QTDIR)\include;$(LLVM_CLANG_INC);.\GeneratedFiles\$(ConfigurationName);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -144,14 +144,14 @@
       <GenerateMapFile>true</GenerateMapFile>
     </Link>
     <QtMoc>
-      <Define>USE_LOUT;UNICODE;_UNICODE;WIN32;WIN64;NDEBUG;%(PreprocessorDefinitions)</Define>
+      <Define>USE_UMBA_LOUT_COUT;UNICODE;_UNICODE;WIN32;WIN64;NDEBUG;%(PreprocessorDefinitions)</Define>
       <IncludePath>$(UMBA_INC_DIRS);.;$(QTDIR)\include;$(LLVM_CLANG_INC);.\GeneratedFiles\$(ConfigurationName);%(AdditionalIncludeDirectories)</IncludePath>
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>USE_LOUT;UNICODE;_UNICODE;WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_UMBA_LOUT_COUT;UNICODE;_UNICODE;WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -168,12 +168,45 @@
       <GenerateMapFile>true</GenerateMapFile>
     </Link>
     <QtMoc>
-      <Define>USE_LOUT;UNICODE;_UNICODE;WIN32;NDEBUG;%(PreprocessorDefinitions)</Define>
+      <Define>USE_UMBA_LOUT_COUT;UNICODE;_UNICODE;WIN32;NDEBUG;%(PreprocessorDefinitions)</Define>
       <IncludePath>$(UMBA_INC_DIRS);.;$(QTDIR)\include;$(LLVM_CLANG_INC);.\GeneratedFiles\$(ConfigurationName);%(AdditionalIncludeDirectories)</IncludePath>
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\marty-json-patch.cpp" />
+    <ClCompile Include="..\_libs\sfmt\umba_lout.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\binary.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\convert.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\depthguard.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\directives.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\emit.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\emitfromevents.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\emitter.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\emitterstate.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\emitterutils.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\exceptions.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\exp.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\memory.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\node.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\node_data.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\nodebuilder.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\nodeevents.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\null.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\ostream_wrapper.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\parse.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\parser.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\regex_yaml.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\scanner.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\scanscalar.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\scantag.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\scantoken.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\simplekey.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\singledocparser.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\stream.cpp" />
+    <ClCompile Include="..\_libs\yaml-cpp\src\tag.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="..\_libs\yaml-cpp\src\contrib\yaml-cpp.natvis" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

@@ -65,8 +65,8 @@ nlohmann::json parseJsonOrYaml( const std::string &data
         YAML::Node yamlNode = YAML::Load(data);
 
         marty::yaml2json::FastSimpleStringStream fssm;
-        marty::yaml2json::writeJson(fssm, yamlNode, -1);
-        //marty::yaml2json::writeJson(fssm, yamlNode, 2);
+        //marty::yaml2json::writeJson(fssm, yamlNode, -1);
+        marty::yaml2json::writeJson(fssm, yamlNode, 2);
 
         if (pTmpJson)
            *pTmpJson = fssm.str();
@@ -106,7 +106,12 @@ nlohmann::json parseJsonOrYaml( const std::string &data
 // iterator_input_adapter
 
 
-nlohmann::json parseJsonOrYaml( std::istream &in, bool allowComments = true, std::string *pErrMsg = 0, std::string *pTmpJson = 0 )
+nlohmann::json parseJsonOrYaml( std::istream &in
+                              , bool allowComments = true
+                              , std::string *pErrMsg = 0
+                              , std::string *pTmpJson = 0
+                              , FileFormat *pDetectedFormat = 0
+                              )
 {
     std::string data;
     char buffer[4096];
@@ -114,7 +119,7 @@ nlohmann::json parseJsonOrYaml( std::istream &in, bool allowComments = true, std
         data.append(buffer, sizeof(buffer));
     data.append(buffer, in.gcount());
     
-    return parseJsonOrYaml( data, allowComments, pErrMsg, pTmpJson );
+    return parseJsonOrYaml( data, allowComments, pErrMsg, pTmpJson, pDetectedFormat );
 
 #if 0
     nlohmann::json jRes;
