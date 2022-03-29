@@ -1,0 +1,17 @@
+The Diff Match and Patch libraries offer robust algorithms 
+  to perform the operations required for synchronizing plain text - https://github.com/google/diff-match-patch
+
+diff - https://ru.wikipedia.org/wiki/Diff
+  diff original new - Вывод команды представляет собой изменения, которые нужно произвести в исходном файле original, чтобы получить новый файл new
+
+  diff --help >diff.txt
+
+  diff [OPTION]... FILE1 FILE2
+
+
+patch - https://ru.wikipedia.org/wiki/Patch_(Unix)
+  patch < разница.diff - Выполнение последней команды перенесёт разницу из нового файла в старый, обновив старый файл.
+
+  patch --help >patch.txt
+
+  patch.EXE [OPTION]... [ORIGFILE [PATCHFILE]]
