@@ -1,0 +1,19 @@
+openapi: 3.0.0
+info:
+  description: tinkoff.ru/invest OpenAPI.
+  version: 1.0.0
+  title: OpenAPI
+  termsOfService: "#"
+tags:
+  - name: sandbox
+    description: Операция в sandbox
+  - name: orders
+    description: Операции заявок
+  - name: portfolio
+    description: Операции с портфелем пользователя
+  - name: market
+    description: Получении информации по бумагам
+  - name: operations
+    description: Получении информации по операциям
+  - name: user
+    description: Получении информации по брокерским счетам
