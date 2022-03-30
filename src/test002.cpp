@@ -1,5 +1,5 @@
 /*! \file
-    \brief Тест конвертера YAML->JSON
+    \brief Draft конвертера YAML->JSON
 */
 
 #include <iostream>

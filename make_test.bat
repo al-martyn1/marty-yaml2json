@@ -13,17 +13,17 @@ src\cpp.template=src\%1.cpp ^
 _prj_msvc2019\vcxproj_stdcpp20.template=_prj_msvc2019\%1.vcxproj
 @rem _prj_qmake\pro.template=_prj_qmake\%1.pro
 
-@rem echo. >test_data\%1.txt
+@rem echo. >tests\%1.txt
 
-copy doc\yaml-examples\swagger-example-tinkoff-openapi.yaml test_data\%1_001.txt
-copy doc\yaml-examples\appveyor.yml                         test_data\%1_002.txt
-copy doc\yaml-examples\travis.yml                           test_data\%1_003.txt
+@rem copy doc\yaml-examples\swagger-example-tinkoff-openapi.yaml test_data\%1_001.txt
+@rem copy doc\yaml-examples\appveyor.yml                         test_data\%1_002.txt
+@rem copy doc\yaml-examples\travis.yml                           test_data\%1_003.txt
 
 
 git add src\%1.cpp              
 git add _prj_msvc2019\%1.vcxproj
 @rem git add _prj_qmake\%1.pro       
-git add test_data\%1.txt
+git add tests\%1.txt
 
 @exit /b
 

@@ -1,5 +1,5 @@
 /*! \file
-    \brief Тест конвертера YAML->JSON
+    \brief marty-yaml2json - конвертер YAML->JSON
 */
 
 #include <iostream>

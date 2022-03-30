@@ -157,7 +157,7 @@ int main( int argc, char* argv[] )
     std::ostream &out = *pOut;
 
 
-    std::string serializedJsonDiff = jDiff.dump(2);
+    
 
     // Если выходной формат не задан, и один из входных файлов - в формате YAML, то задаём формат YAML
     if (ffOutput == marty::json_utils::FileFormat::unknown)
@@ -171,26 +171,15 @@ int main( int argc, char* argv[] )
 
     if (ffOutput == marty::json_utils::FileFormat::json)
     {
-        out << serializedJsonDiff;
+        std::string serializedJson = jDiff.dump(4);
+        out << serializedJson;
         return 0;
     }
     else if (ffOutput == marty::json_utils::FileFormat::yaml)
     {
-        try
-        {
-            YAML::Node diffNode = YAML::Load(serializedJsonDiff);
-            // YAML::Emitter emitter;
-            // emitter << "Hello world!";
-            // std::ofstream fout("file.yaml");
-            // out << diffNode;
-            out << YAML::Dump(diffNode);
-
-        }
-        catch(const std::exception &e)
-        {
-            std::cerr << "Processing YAML output: failed to parse JSON diff: " << e.what() << endl;
-            return 1;
-        }
+        marty::yaml2json::FastSimpleStringStream fss;
+        marty::json_utils::writeYaml( fss, jDiff );
+        out << fss.str();
     }
     else
     {

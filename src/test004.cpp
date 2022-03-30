@@ -1,5 +1,5 @@
 /*! \file
-    \brief Пишем конвертер JSON->YAML
+    \brief Draft конвертера JSON->YAML
 */
 
 #include <iostream>
