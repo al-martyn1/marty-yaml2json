@@ -35,30 +35,47 @@ nlohmann::json parseJsonOrYaml( const std::string &data
 {
     nlohmann::json jRes;
 
+    FileFormat detectedFormat = FileFormat::unknown;
+
     if (pDetectedFormat)
-        *pDetectedFormat = FileFormat::unknown;
+        *pDetectedFormat = detectedFormat;
 
-    try
+    bool jsonStartFound = false;
+    std::string::size_type pos = 0;
+    for(; pos!=data.size(); ++pos)
     {
-        jRes = nlohmann::json::parse( data
-                                    , nullptr        // parser_callback_t
-                                    , true           // allow_exceptions
-                                    , allowComments  // ignore_comments
-                                    );
-    }
-    catch(const std::exception &e)
-    {
-        if (pErrMsg)
-           *pErrMsg = e.what();
+        if (data[pos]==' ')
+            continue;
+
+        if (data[pos]=='{')
+            jsonStartFound = true;
+            
+        break;
     }
 
-    if (!jRes.is_null())
+    if (jsonStartFound)
     {
+        try
+        {
+            jRes = nlohmann::json::parse( data
+                                        , nullptr        // parser_callback_t
+                                        , true           // allow_exceptions
+                                        , allowComments  // ignore_comments
+                                        );
+            detectedFormat = FileFormat::json;
+        }
+        catch(const std::exception &e)
+        {
+            if (pErrMsg)
+               *pErrMsg = e.what();
+        }
+    
         if (pDetectedFormat)
-            *pDetectedFormat = FileFormat::json;
-
+            *pDetectedFormat = detectedFormat;
         return jRes;
     }
+
+
 
     try
     {
@@ -138,6 +155,142 @@ nlohmann::json parseJsonOrYaml( std::istream &in
 #endif    
 }
 
+
+
+inline
+std::string makeIndentStr( int indent )
+{
+    if (indent>=0)
+        return std::string( (std::string::size_type)indent, ' ' );
+
+    //return std::string(" ");
+    return std::string();
+}
+
+inline
+bool isScalar( nlohmann::json &j )
+{
+    if (j.is_null() || j.is_boolean() || j.is_number() || j.is_string())
+        return true;
+    return false;
+}
+
+template<typename StreamType> inline
+bool writeScalar( StreamType &s, nlohmann::json &j )
+{
+    if (j.is_null())
+    {
+        s << "null";
+    }
+    else if (j.is_boolean())
+    {
+        auto val = j.get<bool>();
+        s << (val?"true":"false");
+    }
+    else if (j.is_number_integer() && j.is_number_unsigned())
+    {
+        auto val = j.get<std::uint64_t>();
+        s << val;
+    }
+    else if (j.is_number_integer())
+    {
+        auto val = j.get<std::int64_t>();
+        s << val;
+    }
+    else if (j.is_number_float())
+    {
+        auto val = j.get<double>();
+        s << val;
+    }
+    else if (j.is_string())
+    {
+        auto val = j.get<std::string>();
+        if (val.empty() || val=="null")
+            s << '\'' << val << '\'';
+        else
+            s << val;
+    }
+    else // j.is_object() || j.is_array()
+    {
+        return false;;
+    }
+
+    return true;
+}
+
+
+template<typename StreamType>
+void writeNodeImpl( StreamType &s, nlohmann::json &j // j - не меняется, просто нет константной версии begin/end
+                  , int indent, int indentInc, bool noFirstIndent = false
+                  ) 
+{
+    if (indent<0)
+        indent = 0;
+
+    if (indentInc<1)
+        indentInc = 1;
+
+    if (writeScalar( s, j ))
+    {
+        return;
+    }
+    else if (j.is_object())
+    {
+        bool bFirst = true;
+        for (nlohmann::json::iterator it = j.begin(); it != j.end(); ++it)
+        {
+            if (!(bFirst && noFirstIndent))
+            {
+                s << makeIndentStr(indent);
+            }
+
+            s << it.key() << ":";
+            auto val = it.value();
+            if (isScalar(val))
+            {
+                s << " "; 
+                writeScalar(s,val);
+                s << "\n";
+            }
+            else
+            {
+                s << "\n";
+                writeNodeImpl( s, val, indent+indentInc, indentInc );
+            }
+
+            bFirst = false;
+        }
+
+    }
+    else if (j.is_array())
+    {
+        bool bFirst = true;
+        for (nlohmann::json::iterator it = j.begin(); it != j.end(); ++it)
+        {
+            s << makeIndentStr(indent) << "- ";
+            if (isScalar(*it))
+            {
+                writeScalar(s,*it);
+                s << "\n";
+            }
+            else
+            {
+                writeNodeImpl( s, *it, indent+indentInc, indentInc, true /* noFirstIndent */  );
+            }
+
+            bFirst = false;
+        }
+    }
+
+}
+
+
+template<typename StreamType> inline
+void writeYaml( StreamType &s, nlohmann::json &j // j - не меняется, просто нет константной версии begin/end
+              )
+{
+    writeNodeImpl( s, j, 0, 2, false );
+}
 
 
 

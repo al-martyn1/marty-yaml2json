@@ -6,10 +6,19 @@
         "version-major.minor": 19.29,
         "version-major": 19,
         "version-minor": 29,
-        "tag": {
-          "name": "sandbox",
-          "description": "Операция в sandbox"
-        }
+        "tag": [ {
+                "name": "sandbox",
+                "description": "Операция в sandbox"
+            },
+            {
+                "name": "orders",
+                "description": "Операции заявок"
+            },
+            {
+                "name": "portfolio",
+                "description": "Операции с портфелем пользователя"
+            }
+        ]
     },
     "copyright": "(C) 2013-2022 Niels Lohmann",
     "name": "JSON for Modern C++",

@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <sstream>
 
 
 // marty::yaml2json::
@@ -199,6 +200,43 @@ public:
         m_str.append(str);
         return *this;
     }
+
+    FastSimpleStringStream& operator<<( bool b )
+    {
+        m_str.append(b ? "true" : "false");
+        return *this;
+    }
+
+    template<typename PrimType>
+    FastSimpleStringStream& inserterImpl( PrimType t )
+    {
+        std::ostringstream os;
+        os<<t;
+        m_str.append(os.str());
+        return *this;
+    }
+
+    FastSimpleStringStream& operator<<( double d )
+    {
+        return inserterImpl(d);
+    }
+
+    FastSimpleStringStream& operator<<( float f )
+    {
+        return inserterImpl(f);
+    }
+
+    FastSimpleStringStream& operator<<( int i )
+    {
+        return inserterImpl(i);
+    }
+
+    FastSimpleStringStream& operator<<( unsigned u )
+    {
+        return inserterImpl(u);
+    }
+
+
 
 };
 
