@@ -15,9 +15,9 @@ _prj_msvc2019\vcxproj_stdcpp20.template=_prj_msvc2019\%1.vcxproj
 
 @rem echo. >test_data\%1.txt
 
-@copy doc\yaml-examples\swagger-example-tinkoff-openapi.yaml test_data\%1_001.txt
-@copy doc\yaml-examples\appveyor.yml                         test_data\%1_002.txt
-@copy doc\yaml-examples\travis.yml                           test_data\%1_003.txt
+copy doc\yaml-examples\swagger-example-tinkoff-openapi.yaml test_data\%1_001.txt
+copy doc\yaml-examples\appveyor.yml                         test_data\%1_002.txt
+copy doc\yaml-examples\travis.yml                           test_data\%1_003.txt
 
 
 git add src\%1.cpp              

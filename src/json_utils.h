@@ -135,66 +135,9 @@ nlohmann::json parseJsonOrYaml( std::istream &in
                                     , allowComments  // ignore_comments
                                     );
     }
-    catch(const std::exception &e)
-    {
-        if (pErrMsg)
-           *pErrMsg = e.what();
-    }
-
-    if (!jRes.is_null())
-        return jRes;
-
-    try
-    {
-        YAML::Node yamlNode = YAML::Load(in);
-        auto nodeType = yamlNode.Type();
-        if (nodeType==YAML::NodeType::value::Undefined || nodeType==YAML::NodeType::value::Null)
-            return jRes;
-
-        marty::yaml2json::FastSimpleStringStream fssm;
-        marty::yaml2json::writeJson(fssm, yamlNode, -1);
-        
-        if (pTmpJson)
-           *pTmpJson = fssm.str();
-
-        jRes = nlohmann::json::parse( fssm.str()
-                                    , nullptr        // parser_callback_t
-                                    , true           // allow_exceptions
-                                    , allowComments  // ignore_comments
-                                    );
-
-    }
-    catch (const YAML::Exception& e)
-    {
-        if (pErrMsg)
-           *pErrMsg = e.what();
-    }
-    catch (const std::exception& e)
-    {
-        if (pErrMsg)
-           *pErrMsg = e.what();
-    }
-    catch (...)
-    {
-        if (pErrMsg)
-           *pErrMsg = "unknown error";
-    }
-
-    return jRes;
 #endif    
 }
 
-
-/*
-    static basic_json parse(IteratorType first,
-                            IteratorType last,
-                            const parser_callback_t cb = nullptr,
-                            const bool allow_exceptions = true,
-                            const bool ignore_comments = false)
-
-*/
-
-// auto j4 = json::parse(R"({"happy": true, "pi": 3.141})");
 
 
 
