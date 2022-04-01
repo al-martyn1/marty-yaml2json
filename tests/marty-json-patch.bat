@@ -39,6 +39,6 @@
 @rem marty-yaml-patch-02.log.yaml
 
 
-@start meld  marty-json-diff-02.txt  marty-json-patch-02.log.json
-@start meld  marty-yaml-diff-02.txt  marty-yaml-patch-02.log.yaml
+@rem start meld  marty-json-diff-02.txt  marty-json-patch-02.log.json
+@rem start meld  marty-yaml-diff-02.txt  marty-yaml-patch-02.log.yaml
 
