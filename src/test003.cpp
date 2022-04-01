@@ -179,7 +179,7 @@ void jsonNodeTypeCheckDump( StreamType &s, nlohmann::json &j ) // j - не ме�
 
 
 
-#define USE_EXACT_TEST
+// #define USE_EXACT_TEST
 #define USE_FAST_STREAM
 
 int main( int argc, char* argv[] )

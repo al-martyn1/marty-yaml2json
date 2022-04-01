@@ -100,82 +100,87 @@ int main( int argc, char* argv[] )
     #if defined(USE_EXACT_TEST) && defined(_DEBUG)
 
         args.clear();
-        args.push_back("F:\\_github\\marty-yaml2json\\tests\\test001_001.txt");
+        args.push_back("F:\\_github\\marty-yaml2json\\tests\\marty-yaml2json_001_3_log.json");
+        args.push_back("F:\\_github\\marty-yaml2json\\tests\\marty-yaml2json_001_4_log.json");
 
     #endif
 
 
+    std::string inputName = "STDIN";
+    
+    std::istream *pIn = &std::cin;
 
-    if (args.size()<1)
+    std::ifstream inFile;
+
+    if (args.size()>0)
     {
-        return printUsage("No input file taken");
+        inFile.open(args[0], std::ios_base::in);
+        if (!inFile)
+        {
+            std::cerr << "Failed to open input file: " << args[0] << std::endl;
+            return (1);
+        }
+    
+        inputName = args[0];
+        pIn = &inFile;
     }
+    
+    std::istream &in = *pIn;
 
+
+    YAML::Node rootNode;
 
     try
     {
-        std::ifstream in;
-        in.open(args[0], std::ios_base::in);
-        if (!in)
-        {
-            std::cerr << "Failed to open input file: " << args[0] << std::endl;
-            return 1;
-        }
+        rootNode = YAML::Load(in);
        
-       
-        YAML::Node rootNode = YAML::Load(in);
-       
-        marty::yaml2json::FastSimpleStringStream fssm;
-
-
-        std::ostream *pOut = &std::cout;
-       
-        std::ofstream outFile;
-        if (args.size()>1)
-        {
-            outFile.open(args[1], std::ios_base::out);
-            if (!outFile)
-            {
-                std::cerr << "Failed to open output file: " << args[1] << std::endl;
-                return (1);
-            }
-       
-            pOut = &outFile;
-        }
-       
-        std::ostream &out = *pOut;
-
-       
-        #ifndef USE_FAST_STREAM
         
-            marty::yaml2json::writeJson(out, rootNode, indent);
-       
-        #else
-       
-            marty::yaml2json::writeJson(fssm, rootNode, indent);
-            out << fssm.str();
-       
-        #endif
     }
-    catch (const YAML::Exception& e)
+    catch(const std::exception &e)
     {
-        std::cerr << "Processing YAML failed: " << e.what() << endl;
-        return 2;
+        if (args.size()>0)
+            std::cerr << "Failed to parse input file: " << args[0] << std::endl;
+        else
+            std::cerr << "Failed to parse STDIN input" << std::endl;
+
+        std::cerr << "Error: " << e.what() << std::endl;
+
+        return 1;
     }
-    catch (const std::exception& e)
+
+
+    
+    std::ostream *pOut = &std::cout;
+    
+    std::ofstream outFile;
+    if (args.size()>1)
     {
-        std::cerr << "Processing YAML failed: " << e.what() << endl;
-        return 2;
+        outFile.open(args[1], std::ios_base::out);
+        if (!outFile)
+        {
+            std::cerr << "Failed to open output file: " << args[1] << std::endl;
+            return (1);
+        }
+    
+        pOut = &outFile;
     }
-    catch (...)
-    {
-        std::cerr << "Processing YAML failed: " << "unknown error" << endl;
-        return 2;
-    }
+    
+    std::ostream &out = *pOut;
+
+
+    #ifndef USE_FAST_STREAM
+    
+        marty::yaml2json::writeJson(out, rootNode, indent);
+    
+    #else
+    
+        marty::yaml2json::FastSimpleStringStream fssm;
+        marty::yaml2json::writeJson(fssm, rootNode, indent);
+        out << fssm.str();
+    
+    #endif
 
 
     return 0;
 }
-
-
 

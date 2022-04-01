@@ -37,19 +37,20 @@ using namespace std;
 
 int main( int argc, char* argv[] )
 {
+
+    #ifdef USE_EXACT_TEST
+    
+        INIT_TEST_INPUT_FILE_EX("002");
+    
+    #else
+    
+        INIT_TEST_INPUT_FILE_ARG();
+    
+    #endif
+
+
     try
     {
-        #ifdef USE_EXACT_TEST
-       
-            INIT_TEST_INPUT_FILE_EX("002");
-       
-        #else
-       
-            INIT_TEST_INPUT_FILE_ARG();
-       
-        #endif
-       
-       
         YAML::Node rootNode = YAML::Load(in);
        
         marty::yaml2json::FastSimpleStringStream fssm;
@@ -67,16 +68,19 @@ int main( int argc, char* argv[] )
     }
     catch (const YAML::Exception& e)
     {
+        std::cerr << "Failed to parse input file: " << testInputFileName << std::endl;
         std::cerr << "Processing YAML failed: " << e.what() << endl;
         return 2;
     }
     catch (const std::exception& e)
     {
+        std::cerr << "Failed to parse input file: " << testInputFileName << std::endl;
         std::cerr << "Processing YAML failed: " << e.what() << endl;
         return 2;
     }
     catch (...)
     {
+        std::cerr << "Failed to parse input file: " << testInputFileName << std::endl;
         std::cerr << "Processing YAML failed: " << "unknown error" << endl;
         return 2;
     }

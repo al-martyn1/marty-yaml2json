@@ -13,4 +13,7 @@
 @if not exist %UMBA_TOOLS%\bin    mkdir %UMBA_TOOLS%\bin
 @if not exist %UMBA_TOOLS%\conf   mkdir %UMBA_TOOLS%\conf
 
+@copy /Y .out\msvc2019\x64\Release\marty-json-diff.exe       %UMBA_TOOLS%\bin\
+@copy /Y .out\msvc2019\x64\Release\marty-json-patch.exe      %UMBA_TOOLS%\bin\
+@copy /Y .out\msvc2019\x64\Release\marty-json2yaml.exe       %UMBA_TOOLS%\bin\
 @copy /Y .out\msvc2019\x64\Release\marty-yaml2json.exe       %UMBA_TOOLS%\bin\

@@ -1,0 +1,1 @@
+@call ..\run_test.bat test004 001 %* >test004_001.log.yaml

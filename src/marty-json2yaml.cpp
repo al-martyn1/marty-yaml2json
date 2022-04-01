@@ -90,6 +90,8 @@ int main( int argc, char* argv[] )
 
 
     
+    std::string inputName = "STDIN";
+    
     std::istream *pIn = &std::cin;
 
     std::ifstream inFile;
@@ -103,6 +105,7 @@ int main( int argc, char* argv[] )
             return (1);
         }
     
+        inputName = args[0];
         pIn = &inFile;
     }
     
@@ -130,10 +133,11 @@ int main( int argc, char* argv[] )
     }
     catch(const std::exception &e)
     {
-        if (args.size()>0)
-            std::cerr << "Failed to parse input file: " << args[0] << std::endl;
-        else
-            std::cerr << "Failed to parse STDIN input" << std::endl;
+        std::cerr << "Failed to parse input file: " << inputName << std::endl;
+        // if (args.size()>0)
+        //     std::cerr << "Failed to parse input file: " << args[0] << std::endl;
+        // else
+        //     std::cerr << "Failed to parse STDIN input" << std::endl;
 
         std::cerr << "Error: " << e.what() << std::endl;
 

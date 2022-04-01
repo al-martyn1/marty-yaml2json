@@ -294,25 +294,28 @@ void dumpNode( const YAML::Node &node, int indent = 0 )
 
 }
 
-#define USE_EXACT_TEST
+
+
+
+// #define USE_EXACT_TEST
 
 
 int main( int argc, char* argv[] )
 {
+
+    #ifdef USE_EXACT_TEST
+    
+        INIT_TEST_INPUT_FILE_EX("004");
+    
+    #else
+    
+        INIT_TEST_INPUT_FILE_ARG();
+    
+    #endif
+
+
     try
     {
-
-        #ifdef USE_EXACT_TEST
-       
-            INIT_TEST_INPUT_FILE_EX("004");
-       
-        #else
-       
-            INIT_TEST_INPUT_FILE_ARG();
-       
-        #endif
-
-
         cout << "Reading '" << testInputFileName << endl;
        
         YAML::Node rootNode = YAML::Load(in); // parse(testInputFileName);
@@ -322,16 +325,19 @@ int main( int argc, char* argv[] )
     }
     catch (const YAML::Exception& e)
     {
+        std::cerr << "Failed to parse input file: " << testInputFileName << std::endl;
         std::cerr << "Processing YAML failed: " << e.what() << endl;
         return 2;
     }
     catch (const std::exception& e)
     {
+        std::cerr << "Failed to parse input file: " << testInputFileName << std::endl;
         std::cerr << "Processing YAML failed: " << e.what() << endl;
         return 2;
     }
     catch (...)
     {
+        std::cerr << "Failed to parse input file: " << testInputFileName << std::endl;
         std::cerr << "Processing YAML failed: " << "unknown error" << endl;
         return 2;
     }

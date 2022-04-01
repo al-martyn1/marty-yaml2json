@@ -1,0 +1,9 @@
+@call marty-json-diff.bat
+@call marty-json-patch.bat
+@call marty-json2yaml.bat
+@call marty-yaml2json.bat
+@call test001.bat
+@call test002.bat
+@call test003.bat
+@call test004.bat
+@call test005.bat

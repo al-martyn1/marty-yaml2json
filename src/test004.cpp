@@ -313,7 +313,7 @@ void writeNodeImpl( StreamType &s, nlohmann::json &j // j - не меняетс�
 
 
 
-#define USE_EXACT_TEST
+//#define USE_EXACT_TEST
 #define USE_FAST_STREAM
 
 int main( int argc, char* argv[] )
