@@ -1,4 +1,8 @@
 openapi: 3.0.0
+float_val: 4.0
+like_float: '5.0'
+int_val: -6
+like_int: '-7'
 info:
   description: tinkoff.ru/invest OpenAPI.
   version: 1.0.0

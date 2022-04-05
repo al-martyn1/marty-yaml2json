@@ -76,6 +76,111 @@ std::string makeIndentStr( int indent )
     return std::string();
 }
 
+
+#define DUMP_SCALAR_INFO
+
+/*
+    Tag() can be one of:
+    ?
+    !
+
+openapi: 3.0.0
+float_val: 4.0
+like_float: '5.0'
+int_val: -6
+like_int: '-7'
+info:
+  version: 1.0.0
+  termsOfService: "#"
+
+
+Found tags:
+!
+    #
+    -7     // like_int
+    200
+    5.0    // like_float
+    500
+?
+    -6     // int_val
+    1.0.0
+    3.0.0
+    4.0    // float_val
+
+
+! - строки
+? - вероятно, числа, но не факт
+
+*/
+
+
+static std::map<std::string, std::set<std::string> > foundTags;
+
+inline
+bool isAnyTextChar( char ch )
+{
+    if (ch>=' ' && ch<='\"')
+        return true;
+    if (ch>='$' && ch<=',')
+        return true;
+    if (ch>=':' && ch<='?')
+        return true;
+    if (ch>='[' && ch<='`')
+        return true;
+    if (ch>='{' && ch<='~')
+        return true;
+    if (ch>='a' && ch<='z')
+        return true;
+    if (ch>='A' && ch<='Z')
+        return true;
+    if (ch>126)
+        return true;
+    if (ch<' ')
+        return true;
+
+    return false;
+}
+
+inline
+bool isTextChar( char ch )
+{
+    if (ch>='a' && ch<='z')
+        return true;
+    if (ch>='A' && ch<='Z')
+        return true;
+    if (ch>126)
+        return true;
+    if (ch<' ')
+        return true;
+
+    return false;
+}
+
+inline
+bool isAnyTextStr(const std::string &s)
+{
+    for( auto ch : s )
+    {
+        if (isAnyTextChar(ch))
+            return true;
+    }
+
+    return false;
+}
+
+inline
+bool isTextStr(const std::string &s)
+{
+    for( auto ch : s )
+    {
+        if (isTextChar(ch))
+            return true;
+    }
+
+    return false;
+}
+
+
 inline
 void dumpNode( const YAML::Node &node, int indent = 0 )
 {
@@ -103,7 +208,12 @@ void dumpNode( const YAML::Node &node, int indent = 0 )
                  //cout << makeIndentStr(indent) << "Scalar node found" << endl;
                  std::string value  = node.as<std::string>();
                  cout << makeIndentStr(indent) << value << endl;
-}
+                 #ifdef DUMP_SCALAR_INFO
+                 cout << makeIndentStr(indent) << "// Node type: " << getNodeTypeName(nodeType) << endl;
+                 cout << makeIndentStr(indent) << "// Node tag : " << node.Tag() << endl;
+                 #endif
+                 foundTags[node.Tag()].insert(value);
+             }
              return;
 
         case YAML::NodeType::value::Sequence :
@@ -135,6 +245,11 @@ void dumpNode( const YAML::Node &node, int indent = 0 )
                                   //cout << makeIndentStr(indent) << "Scalar in Sequence node found" << endl;
                                   std::string value  = it->as<std::string>();
                                   cout << makeIndentStr(indent) << value;
+                                  #ifdef DUMP_SCALAR_INFO
+                                  cout << endl << makeIndentStr(indent) << "// Node type: " << getNodeTypeName(it->Type());
+                                  cout << endl << makeIndentStr(indent) << "// Node tag : " << it->Tag();
+                                  #endif
+                                  foundTags[it->Tag()].insert(value);
                                   if (!isLast)
                                       cout << ",";
                                   cout << endl;
@@ -184,7 +299,7 @@ void dumpNode( const YAML::Node &node, int indent = 0 )
                      auto nextIt  = it; ++nextIt;
                      bool isLast  = nextIt==node.end();
 
-                     std::string name  = it->first .as<std::string>();
+                     std::string name  = it->first.as<std::string>();
                      //cout << makeIndentStr(indent) << name <<  /* ": " << value << */  endl;
                      switch( it->second.Type() )
                      {
@@ -192,6 +307,14 @@ void dumpNode( const YAML::Node &node, int indent = 0 )
                               {
                                   std::string value  = it->second.as<std::string>();
                                   cout << makeIndentStr(indent) << name << ": " << value;
+                                  #ifdef DUMP_SCALAR_INFO
+                                  cout << endl << makeIndentStr(indent) << "// Name Node type: " << getNodeTypeName(it->first.Type());
+                                  cout << endl << makeIndentStr(indent) << "// Name Node tag : " << it->first.Tag();
+                                  cout << endl << makeIndentStr(indent) << "// Val Node type: " << getNodeTypeName(it->second.Type());
+                                  cout << endl << makeIndentStr(indent) << "// Val Node tag : " << it->second.Tag();
+                                  #endif
+                                  foundTags[it->first.Tag() ].insert(name);
+                                  foundTags[it->second.Tag()].insert(value);
                                   if (!isLast)
                                       cout << ",";
                                   cout << endl;
@@ -200,7 +323,13 @@ void dumpNode( const YAML::Node &node, int indent = 0 )
 
                          case YAML::NodeType::value::Sequence :
                               {
-                                  cout << makeIndentStr(indent) << name << ": " << endl;
+                                  cout << makeIndentStr(indent) << name << ": ";
+                                  #ifdef DUMP_SCALAR_INFO
+                                  cout << endl << makeIndentStr(indent) << "// Name Node type: " << getNodeTypeName(it->first.Type());
+                                  cout << endl << makeIndentStr(indent) << "// Name Node tag : " << it->first.Tag();
+                                  #endif
+                                  foundTags[it->first.Tag()].insert(name);
+                                  cout << endl;
                                   cout << makeIndentStr(indent) << "[" << endl;
                                   dumpNode( it->second, indent +4 );
                                   cout << makeIndentStr(indent) << "]"; // << endl;
@@ -212,7 +341,13 @@ void dumpNode( const YAML::Node &node, int indent = 0 )
 
                          case YAML::NodeType::value::Map      :
                               {
-                                  cout << makeIndentStr(indent) << name << ": " << endl;
+                                  cout << makeIndentStr(indent) << name << ": ";
+                                  #ifdef DUMP_SCALAR_INFO
+                                  cout << endl << makeIndentStr(indent) << "// Name Node type: " << getNodeTypeName(it->first.Type());
+                                  cout << endl << makeIndentStr(indent) << "// Name Node tag : " << it->first.Tag();
+                                  #endif
+                                  foundTags[it->first.Tag()].insert(name);
+                                  cout << endl;
                                   cout << makeIndentStr(indent) << "{" << endl;
                                   dumpNode( it->second, indent +4 );
                                   cout << makeIndentStr(indent) << "}"; // << endl;
@@ -321,6 +456,18 @@ int main( int argc, char* argv[] )
         YAML::Node rootNode = YAML::Load(in); // parse(testInputFileName);
        
         dumpNode(rootNode);
+
+        cout << "\n\n---------------\nFound tags:\n";
+        for(auto [tag,tagedVals] : foundTags)
+        {
+            cout << tag <<"\n";
+            for(auto val : tagedVals)
+            {
+                if (isTextStr(val))
+                    continue;
+                cout << "    " << val << "\n";
+            }
+        }
 
     }
     catch (const YAML::Exception& e)

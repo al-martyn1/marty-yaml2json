@@ -79,7 +79,7 @@ TEST(YamlUtils, detectValueType)
     EXPECT_TRUE( DetectedValueType::string  == detectValueType("00"));
     EXPECT_TRUE( DetectedValueType::string  == detectValueType("000"));
     EXPECT_TRUE( DetectedValueType::string  == detectValueType("0.0.0"));
-
+    EXPECT_TRUE( DetectedValueType::string  == detectValueType("2016-09"));
 }
 
 
