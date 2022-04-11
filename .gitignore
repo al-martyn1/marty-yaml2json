@@ -35,3 +35,4 @@
 /_prj_msvc2019/*.user
 /tests/*.log
 /.distr
+/*.log

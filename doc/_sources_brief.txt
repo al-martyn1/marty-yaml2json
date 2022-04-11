@@ -5,8 +5,11 @@ marty-json-diff.cpp  - marty-json-diff utility.
 marty-json-patch.cpp - marty-json-patch utility.
 marty-json2yaml.cpp  - marty-json2yaml - конвертер JSON->YAML.
 marty-yaml2json.cpp  - marty-yaml2json - конвертер YAML->JSON.
+qt_stub.cpp          - Стаб, для того, чтобы windeployqt подсосал нужный рантайм для MSVC - а то
+                       совсем без Qt он не работает.
 test001.cpp          - Тестировал/разбирался, как работает либа yaml-cpp.
 test002.cpp          - Draft конвертера YAML->JSON.
 test003.cpp          - Просто дамп типов элементов JSON-дерева.
 test004.cpp          - Draft конвертера JSON->YAML.
-test005.cpp          - Regression tests for marty::yaml2json::detectValueType.
+test005.cpp          - Regression tests for marty::yaml2json::detectValueType/makeQuoted.
+test006.cpp          - 

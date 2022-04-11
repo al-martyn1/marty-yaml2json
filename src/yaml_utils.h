@@ -282,6 +282,12 @@ std::string makeEscapedString( const std::string & str )
 {
     std::string res; res.reserve(str.size());
 
+
+
+    // return str;
+
+    #if 1
+
     for( auto ch : str )
     {
         switch(ch)
@@ -330,6 +336,7 @@ std::string makeEscapedString( const std::string & str )
     }
 
     return res;
+    #endif
 }
 
 
@@ -366,14 +373,43 @@ bool isNodeScalarSequence( const YAML::Node &node )
 }
 
 inline
+bool isNeedToBeQuoted(const std::string & str)
+{
+    for( auto ch : str )
+    {
+        switch(ch)
+        {
+            case ' ':
+            case '\\':
+            case '\'':
+            case '\"':
+            case '[':
+            case ']':
+            case '*':
+                 return true;
+        };
+    }
+
+    return false;
+}
+
+inline
 std::string makeQuoted( const std::string & str, bool forceQuoted = false )
 {
     if (!forceQuoted)
     {
+        if (str=="~" || str=="null" || str=="Null" || str=="NULL" || str=="false" || str=="true")
+        {
+            return str;
+        }
+
         auto detectedValueType = detectValueType( str );
         if (detectedValueType==DetectedValueType::string)
             forceQuoted = true;
     }
+
+    if (!forceQuoted && isNeedToBeQuoted(str))
+        forceQuoted = true;
 
     if (!forceQuoted)
         return str;
@@ -421,15 +457,29 @@ Found tags:
 */
 
 inline
-std::string makeQuoted( const std::string & str, const std::string &tag /* , bool forceQuoted = false */  )
+std::string makeQuoted( const std::string & str, const std::string &tag )
 {
     // if (tag=="!") // Это точно строка
     //     return makeQuoted(str, true); // force make quoted
+
+    if (str=="null" || str=="false" || str=="true") // Это литералы
+    {
+        return str;
+    }
 
     if (tag=="?") // Это вероятно число
         return makeQuoted(str, false); // Отсеиваем '3.0.0', '+100500' и тп
 
     return makeQuoted(str, true); // force make quoted
+}
+
+inline
+std::string makeQuoted( const std::string & str, const char* tag )
+{
+    if (tag)
+        return makeQuoted(str, std::string(tag));
+    else
+        return makeQuoted(str);
 }
 
 

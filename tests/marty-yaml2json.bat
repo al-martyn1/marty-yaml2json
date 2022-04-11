@@ -18,3 +18,10 @@
 @call ..\run_test.bat marty-yaml2json -d:4 %SP%\marty-yaml2json_003_3_log.json   >marty-yaml2json_003_4_log.json
 
 
+@call ..\run_test.bat marty-yaml2json -d:4 %SP%\marty-yaml2json_description.yaml     >marty-json2yaml_description.json
+@call ..\run_test.bat marty-json2yaml          <marty-json2yaml_description.json     >marty-yaml2json_description-new.yaml
+@call ..\run_test.bat marty-yaml2json -d:4 %SP%\marty-yaml2json_description-new.yaml >marty-json2yaml_description-new.json
+@call ..\run_test.bat marty-json2yaml          <marty-json2yaml_description-new.json >marty-yaml2json_description2-new.yaml
+
+
+

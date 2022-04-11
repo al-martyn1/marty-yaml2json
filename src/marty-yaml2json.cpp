@@ -48,7 +48,7 @@ int printUsage( const char *msg = 0 )
     cerr << "Usage: marty-yaml2json [OPTIONS] yaml [json]" << std::endl;
     cerr << "If the optional [json] file name not taken, the STDOUT is used" << std::endl;
     cerr << "OPTIONS can be one of the:" << std::endl;
-    cerr << "  -d=N        set the output indent to N (-1 for the single line output)";
+    cerr << "  -d=N        set the output indent to N (-1 for the single line output)" << std::endl;
     cerr << "              ':' also can be used as a separator" << std::endl;
     cerr << "  -h,--help   print this help and exit" << std::endl;
     return 1;
@@ -100,8 +100,9 @@ int main( int argc, char* argv[] )
     #if defined(USE_EXACT_TEST) && defined(_DEBUG)
 
         args.clear();
-        args.push_back("F:\\_github\\marty-yaml2json\\tests\\marty-yaml2json_001_3_log.json");
-        args.push_back("F:\\_github\\marty-yaml2json\\tests\\marty-yaml2json_001_4_log.json");
+        //args.push_back("F:\\_github\\marty-yaml2json\\tests\\marty-yaml2json_001_3_log.json");
+        //args.push_back("F:\\_github\\marty-yaml2json\\tests\\marty-yaml2json_001_4_log.json");
+        args.push_back("F:\\_github\\marty-yaml2json\\tests\\marty-yaml2json_description.yaml");
 
     #endif
 

@@ -58,6 +58,7 @@ int printUsage( const char *msg = 0 )
 
 
 // #define USE_EXACT_TEST
+
 #define USE_FAST_STREAM
 
 int main( int argc, char* argv[] )
@@ -83,7 +84,8 @@ int main( int argc, char* argv[] )
     #if defined(USE_EXACT_TEST) && defined(_DEBUG)
 
         args.clear();
-        args.push_back("F:\\_github\\marty-yaml2json\\tests\\test001_004.txt");
+        //args.push_back("F:\\_github\\marty-yaml2json\\tests\\test001_004.txt");
+        args.push_back("F:\\_github\\marty-yaml2json\\tests\\amazonaws-application-autoscaling-openapi.json");
 
     #endif
 

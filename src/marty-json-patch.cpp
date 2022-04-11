@@ -44,7 +44,7 @@ int printUsage( const char *msg = 0 )
     cerr << "OPTIONS can be one of the:" << std::endl;
     cerr << "  -y          force output in the YAML format" << std::endl;
     cerr << "  -j          force output in the JSON format" << std::endl;
-    cerr << "  -d=N        set the output indent to N (-1 for the single line output)";
+    cerr << "  -d=N        set the output indent to N (-1 for the single line output)" << std::endl;
     cerr << "              ':' also can be used as a separator" << std::endl;
     cerr << "  -h,--help   print this help and exit" << std::endl;
     return 1;
