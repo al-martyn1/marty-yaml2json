@@ -13,6 +13,8 @@
 
 #include "umba/regex_helpers.h"
 
+#include "yaml_utils.h"
+
 
 // marty::json_utils::
 
@@ -121,7 +123,59 @@ bool isObjectNode( JsonNodeType nodeType )
     return false;
 }
 
+//------------------------------
+inline
+std::string nodeTypeName( const nlohmann::json &jNode )
+{
+    return nodeTypeName(nodeType(jNode));
+}
+
+//------------------------------
+inline
+bool isScalarNode( const nlohmann::json &jNode )
+{
+    return isScalarNode(nodeType(jNode));
+}
+
+//------------------------------
+inline
+bool isArrayNode( const nlohmann::json &jNode )
+{
+    return isArrayNode(nodeType(jNode));
+}
+
+//------------------------------
+inline
+bool isObjectNode( const nlohmann::json &jNode )
+{
+    return isObjectNode(nodeType(jNode));
+}
+
 //----------------------------------------------------------------------------
+
+
+
+
+//----------------------------------------------------------------------------
+inline
+nlohmann::json_pointer<nlohmann::json> makeJsonPointer(const std::string &path)
+{
+    if (!path.empty() && path[0]!='/')
+        return nlohmann::json_pointer<nlohmann::json>(std::string("/")+path);
+    return nlohmann::json_pointer<nlohmann::json>(path);
+}
+
+inline
+nlohmann::json_pointer<nlohmann::json> makeJsonPointer(const char* path)
+{
+    if (!path)
+        //return nlohmann::json_pointer<json>();
+        makeJsonPointer(std::string());
+
+    return makeJsonPointer(std::string(path));
+}
+//----------------------------------------------------------------------------
+
 
 
 
@@ -266,6 +320,30 @@ nlohmann::json parseJsonOrYaml( std::istream &in
 }
 
 //----------------------------------------------------------------------------
+nlohmann::json parseJsonOrYamlFromFile( const std::string &fileName
+                              , bool allowComments = true
+                              , std::string *pErrMsg = 0
+                              , std::string *pTmpJson = 0
+                              , FileFormat *pDetectedFormat = 0
+                              )
+{
+    std::ifstream in(fileName.c_str());
+
+    if (!in)
+    {
+        if (pDetectedFormat)
+            *pDetectedFormat = FileFormat::unknown;
+
+        if (pErrMsg)
+            *pErrMsg = "Failed to open file '" + fileName + "'";
+
+        return nlohmann::json{};
+    }
+
+    return parseJsonOrYaml( in, allowComments, pErrMsg, pTmpJson, pDetectedFormat );
+}
+
+//----------------------------------------------------------------------------
 inline
 std::string makeIndentStr( int indent )
 {
@@ -382,7 +460,25 @@ bool writeScalar( StreamType &s, nlohmann::json &j )
 }
 
 //----------------------------------------------------------------------------
-template<typename StreamType>
+inline
+bool writeScalar( std::string &str, nlohmann::json &j )
+{
+    marty::yaml2json::FastSimpleStringStream fssm;
+    writeScalar(fssm, j);
+    str = fssm.str();
+}
+
+//----------------------------------------------------------------------------
+inline
+std::string getScalarStr( nlohmann::json &j )
+{
+    marty::yaml2json::FastSimpleStringStream fssm;
+    writeScalar(fssm, j);
+    return fssm.str();
+}
+
+//----------------------------------------------------------------------------
+template<typename StreamType> inline
 void writeNodeImpl( StreamType &s, nlohmann::json &j // j - не меняется, просто нет константной версии begin/end
                   , int indent, int indentInc, bool noFirstIndent = false
                   ) 
@@ -466,6 +562,64 @@ void writeYaml( StreamType &s, nlohmann::json &j // j - не меняется, �
 
 
 //----------------------------------------------------------------------------
+inline
+std::string jsonNameEscape( const std::string &str )
+{
+    std::string res; res.reserve(str.size());
+
+    for( auto ch : str )
+    {
+        switch(ch)
+        {
+            case '~': res.append("~0"); break;
+            case '/': res.append("~1"); break;
+            default : res.append(1,ch);
+        }
+    }
+
+    return res;
+}
+
+//------------------------------
+inline
+std::string jsonNameUnescape( const std::string &str )
+{
+    std::string res; res.reserve(str.size());
+
+    bool prevTilde = false;
+
+    for( auto ch : str )
+    {
+        if (prevTilde)
+        {
+            switch(ch)
+            {
+                case '0': res.append(1,'~'); break;
+                case '1': res.append(1,'/'); break;
+                default : res.append(1,'~'); res.append(1,ch); // не знаю, что это, просто игнорим
+            }
+
+            prevTilde = false;
+        }
+        else
+        {
+            switch(ch)
+            {
+                case '~': prevTilde = true; break;
+                default : res.append(1,ch);
+            }
+        }
+    }
+
+    if (prevTilde)
+    {
+        res.append(1,'~');
+    }
+
+    return res;
+}
+
+//----------------------------------------------------------------------------
 /*  Notes for iterator
 
     https://json.nlohmann.me/api/basic_json/erase/#exceptions
@@ -519,7 +673,7 @@ void removePaths( nlohmann::json &jNode
     {
         for (nlohmann::json::iterator it=jNode.begin(); it!=jNode.end(); ++it)
         {
-            auto childPath = path + "/" + it.key();
+            auto childPath = path + "/" + jsonNameEscape(it.key());
             if (umba::regex_helpers::regexMatch(childPath, r, flags))
             {
                 removeNodeIterators.emplace_back(it);
@@ -563,7 +717,7 @@ void removePaths( nlohmann::json &jNode
         unsigned idx = 0;
         for (nlohmann::json::iterator it=jNode.begin(); it!=jNode.end(); ++it, ++idx)
         {
-            auto childPath = path + "/" + std::to_string(idx);
+            auto childPath = path + "/" + jsonNameEscape(std::to_string(idx));
             if (umba::regex_helpers::regexMatch(childPath, r, flags))
             {
                 removeNodeIterators.emplace_back(it);
@@ -583,7 +737,7 @@ void removePaths( nlohmann::json &jNode
     {
         for (nlohmann::json::iterator it=jNode.begin(); it!=jNode.end(); ++it)
         {
-            auto childPath = path + "/" + it.key();
+            auto childPath = path + "/" + jsonNameEscape(it.key());
             if (umba::regex_helpers::regexMatch(childPath, r, flags))
             {
                 removeNodeIterators.emplace_back(it);
@@ -594,15 +748,111 @@ void removePaths( nlohmann::json &jNode
 
         for (nlohmann::json::iterator it=jNode.begin(); it!=jNode.end(); ++it)
         {
-            auto childPath = path + "/" + it.key();
+            auto childPath = path + "/" + jsonNameEscape(it.key());
             removePaths( it.value(), r, flags, childPath );
         }
 
     }
 }
 
+//----------------------------------------------------------------------------
+void findPathMatches( nlohmann::json               &jNode
+                    , std::vector<std::string>     &pathMatches
+                    , const std::basic_regex<char> &r
+                    , bool                         recurse = true // lookup recursively in matched nodes
+                    , std::regex_constants::match_flag_type flags = std::regex_constants::match_default
+                    , std::string path = ""
+                    )
+{
+    auto nodeType = marty::json_utils::nodeType(jNode);
+
+    if (marty::json_utils::isArrayNode(nodeType))
+    {
+        unsigned idx = 0;
+        for (nlohmann::json::iterator it=jNode.begin(); it!=jNode.end(); ++it, ++idx)
+        {
+            auto childPath = path + "/" + std::to_string(idx);
+            if (umba::regex_helpers::regexMatch(childPath, r, flags))
+            {
+                pathMatches.emplace_back(childPath);
+                if (recurse)
+                    findPathMatches(*it, pathMatches, r, recurse, flags, childPath);
+            }
+            else
+            {
+                findPathMatches(*it, pathMatches, r, recurse, flags, childPath);
+            }
+        }
+    }
+    else if (marty::json_utils::isObjectNode(nodeType))
+    {
+        for (nlohmann::json::iterator it=jNode.begin(); it!=jNode.end(); ++it)
+        {
+            auto childPath = path + "/" + jsonNameEscape(it.key());
+            if (umba::regex_helpers::regexMatch(childPath, r, flags))
+            {
+                pathMatches.emplace_back(childPath);
+                if (recurse)
+                    findPathMatches(it.value(), pathMatches, r, recurse, flags, childPath);
+            }
+            else
+            {
+                findPathMatches(it.value(), pathMatches, r, recurse, flags, childPath);
+            }
+        }
+    }
+}
 
 //----------------------------------------------------------------------------
+void findPathMatches( nlohmann::json               &jNode
+                    , std::vector<std::string>     &pathMatches
+                    , const std::vector< std::basic_regex<char> > &r
+                    , bool                         recurse = true
+                    , std::regex_constants::match_flag_type flags = std::regex_constants::match_default
+                    , std::string path = ""
+                    )
+{
+    auto nodeType = marty::json_utils::nodeType(jNode);
+
+    if (marty::json_utils::isArrayNode(nodeType))
+    {
+        unsigned idx = 0;
+        for (nlohmann::json::iterator it=jNode.begin(); it!=jNode.end(); ++it, ++idx)
+        {
+            auto childPath = path + "/" + std::to_string(idx);
+            if (umba::regex_helpers::regexMatch(childPath, r, flags))
+            {
+                pathMatches.emplace_back(childPath);
+                if (recurse)
+                    findPathMatches(*it, pathMatches, r, recurse, flags, childPath);
+            }
+            else
+            {
+                findPathMatches(*it, pathMatches, r, recurse, flags, childPath);
+            }
+        }
+    }
+    else if (marty::json_utils::isObjectNode(nodeType))
+    {
+        for (nlohmann::json::iterator it=jNode.begin(); it!=jNode.end(); ++it)
+        {
+            auto childPath = path + "/" + jsonNameEscape(it.key());
+            if (umba::regex_helpers::regexMatch(childPath, r, flags))
+            {
+                pathMatches.emplace_back(childPath);
+                if (recurse)
+                    findPathMatches(it.value(), pathMatches, r, recurse, flags, childPath);
+            }
+            else
+            {
+                findPathMatches(it.value(), pathMatches, r, recurse, flags, childPath);
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------
+
 
 } // namespace json_utils
 } // namespace marty
